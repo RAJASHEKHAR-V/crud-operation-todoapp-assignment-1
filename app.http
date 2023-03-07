@@ -41,7 +41,7 @@ GET http://localhost:3000/agenda/?date=2021-12-12
 ###
 
 //API-4 create todo details 
-POST  http://localhost:3000/todos/ 
+PUT   http://localhost:3000/todos/ 
 Content-Type: application/json
 
 {
@@ -54,3 +54,54 @@ Content-Type: application/json
 }
 ### 
 
+//API-5 update todo details scenarios 
+
+//Scenario-1 upadate status
+PUT   http://localhost:3000/todos/6/ 
+Content-Type: application/json
+
+{
+  "status": "DONE"
+}
+
+###
+ 
+//Scenario-2 upadate priority
+PUT   http://localhost:3000/todos/6/ 
+Content-Type: application/json
+
+{
+  "priority": "HIGH"
+}
+###
+
+//Scenario-3 upadate todo
+PUT   http://localhost:3000/todos/6/ 
+Content-Type: application/json
+
+{
+  "todo": "Clean the garden"
+}
+###
+
+//Scenario-4 upadate category
+PUT   http://localhost:3000/todos/6/ 
+Content-Type: application/json
+
+{
+  "category": "LEARNING"
+}
+###
+
+//Scenario-5 upadate due date 
+PUT   http://localhost:3000/todos/6/ 
+Content-Type: application/json
+
+{
+  "dueDate": "2021-01-12"
+}
+###
+
+//API-6 Delete the specific todo based on id
+DELETE http://localhost:3000/todos/6/ 
+###

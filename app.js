@@ -166,6 +166,7 @@ const checkBodyParameters = async (request, response, next) => {
   }
   request.id = id;
   request.todo = todo;
+  request.todoId = todoId;
   next();
 };
 
@@ -187,10 +188,10 @@ app.get("/todos/", checkQueryParameters, async (request, response) => {
 
 // API-2 get the todo details based on the specific todoId;
 
-app.get("/todos/:todoId/", async (request, response) => {
+app.get("/todos/:todoId/", checkBodyParameters, async (request, response) => {
   const { todoId } = request;
   const getIdTodoQuery = `
-    SELECT id, todo, category, priority, status, due_date AS dueDate
+    SELECT id AS id,todo AS todo, category AS category, priority AS priority, status AS status, due_date AS dueDate
     FROM todo WHERE id =${todoId};`;
   const idTodo = await db.get(getIdTodoQuery);
   response.send(idTodo);
@@ -203,7 +204,7 @@ app.get("/agenda/", checkQueryParameters, async (request, response) => {
   const getDateTodoQuery = `
     SELECT id, todo, category, priority, status, due_date AS dueDate
     FROM todo WHERE due_date = '${date}';`;
-  const dateTodo = await db.get(getDateTodoQuery);
+  const dateTodo = await db.all(getDateTodoQuery);
   response.send(dateTodo);
 });
 
@@ -218,4 +219,64 @@ app.post("/todos/", checkBodyParameters, async (request, response) => {
   response.send("Todo Successfully Added");
 });
 
-//API-5
+//API-5 update todo details
+
+app.put("/todos/:todoId/", checkBodyParameters, async (request, response) => {
+  const { todo, category, priority, status, dueDate } = request;
+  const { todoId } = request;
+  let todoQuery = null;
+  switch (true) {
+    case todo !== undefined:
+      todoQuery = `
+            UPDATE todo 
+            SET todo = '${todo}'
+            WHERE id =${todoId};`;
+      await db.run(todoQuery);
+      response.send("Todo Updated");
+      break;
+    case category !== undefined:
+      todoQuery = `
+            UPDATE todo 
+            SET category = '${category}' 
+            WHERE id =${todoId};`;
+      await db.run(todoQuery);
+      response.send("Category Updated");
+      break;
+    case priority !== undefined:
+      todoQuery = `
+            UPDATE todo 
+            SET priority = '${priority}'
+            WHERE id =${todoId};`;
+      await db.run(todoQuery);
+      response.send("Priority Updated");
+      break;
+    case status !== undefined:
+      todoQuery = `
+            UPDATE todo 
+            SET status = '${status}'
+            WHERE id =${todoId};`;
+      await db.run(todoQuery);
+      response.send("Status Updated");
+      break;
+    default:
+      todoQuery = `
+            UPDATE todo 
+            SET due_date = '${dueDate}'
+            WHERE id =${todoId};`;
+      await db.run(todoQuery);
+      response.send("Due Date Updated");
+      break;
+  }
+});
+
+//API-6 Delete the specific todo based on id
+
+app.delete("/todos/:todoId/", async (request, response) => {
+  const { todoId } = request.params;
+  const deleteTodoQuery = `
+    DELETE FROM todo WHERE id = ${todoId}`;
+  await db.run(deleteTodoQuery);
+  response.send("Todo Deleted");
+});
+
+module.exports = app;
